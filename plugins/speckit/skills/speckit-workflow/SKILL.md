@@ -73,7 +73,7 @@ What init does and doesn't touch (verified on specify 1.2.x):
 - Optional: `--extension git` makes each new feature create its own git branch.
 
 After init:
-- If `/speckit-*` commands don't show up, ask the user to restart Claude Code (new skills folder).
+- The `/speckit-*` commands are new skills under `.claude/skills/`, so they do **not** load in the session that ran init. Don't stop: in this session, run each stage by reading `.claude/skills/speckit-<stage>/SKILL.md` **in full** and following it exactly (its scripts, templates, and file paths) — that file *is* the command. From the next Claude Code session the commands are available directly.
 - Command names depend on the Spec-Kit version: `/speckit-specify` (1.x, installed as skills) or `/speckit.specify` (older, installed as commands). Same command — use whichever exists.
 
 ## 3. The workflow (in order)
@@ -92,9 +92,12 @@ After init:
 
 Adding a feature later (scenario C): skip init and constitution — start again from `/speckit-specify`. Each feature gets the next numbered folder in `specs/`.
 
+How stages find the current feature: `/speckit-specify` creates `specs/NNN-name/` itself (next free number) and writes its path to `.specify/feature.json`; plan, tasks, and implement read that file. Don't create feature folders by hand, and when switching back to an older feature, update `.specify/feature.json`. On Windows PowerShell 5.1, write JSON and Markdown as UTF-8 **without** BOM (`Set-Content -Encoding utf8` adds one).
+
 Rules:
 - Stop at each gate and show the user a short summary of the generated file before moving on. Never jump to implement without an approved spec + plan.
-- Short path when the user wants speed: constitution → specify → plan → tasks → implement.
+- Short path when the user wants speed: constitution → specify → plan → tasks → implement. Arabic/RTL projects keep the checklist (section 8) even on the short path.
+- Checklist items are created **unchecked on purpose** — they are for the user to confirm. Show them, tick the ones the user confirms (or fix the spec/plan for the ones that fail). `/speckit-implement` stops and asks while any item is unchecked; that is expected, not an error.
 - New project with authentication: make login work end to end before any other feature.
 - Model hint (Claude Code): a stronger model (Opus) for constitution/specify/clarify/plan; a faster one (Sonnet) is fine for implement.
 
@@ -145,7 +148,7 @@ Any task converting a whole Figma design or touching multiple features should go
 ## 8. Arabic-first / RTL projects
 
 If the project is Arabic-first, put RTL in the spec and always run `/speckit-checklist` with a prompt like:
-> تحقق من جودة التصميم و UX للصفحات العامة ولوحة الأدمن معًا: هوية بصرية موحدة (ألوان، خطوط، تباعد)، تباين لوني كافٍ (accessibility)، تصميم متجاوب (Responsive) لكل صفحة، دعم RTL واضح لكل عنصر تفاعلي، حالات التحميل/الأخطاء/النجاح موصوفة وقابلة للاختبار.
+> تحقق من جودة التصميم و UX لكل صفحات المشروع (ولوحة الأدمن لو موجودة): هوية بصرية موحدة (ألوان، خطوط، تباعد)، تباين لوني كافٍ (accessibility)، تصميم متجاوب (Responsive) لكل صفحة، دعم RTL واضح لكل عنصر تفاعلي، حالات التحميل/الأخطاء/النجاح موصوفة وقابلة للاختبار.
 
 ## 9. Example `/speckit-specify` prompt (medical device maintenance center)
 
@@ -165,8 +168,9 @@ If the project is Arabic-first, put RTL in the spec and always run `/speckit-che
 
 ## 10. When `/speckit-*` commands are not available
 
-Run `specify init` in the project folder, then follow the same stages manually:
-- Read the templates in `.specify/templates/` (spec, plan, tasks, checklist) and any helper scripts in `.specify/scripts/`.
+This happens right after init (same session) or in tools without Claude Code skills. Run `specify init` in the project folder if it isn't done yet, then follow the same stages manually:
+- Best source: the installed `.claude/skills/speckit-<stage>/SKILL.md` files — read each one in full and follow it; they name the exact scripts (`.specify/scripts/powershell/*.ps1` on Windows, `.specify/scripts/bash/*.sh` elsewhere) and templates.
+- Otherwise read the templates in `.specify/templates/` (spec, plan, tasks, checklist) and the helper scripts in `.specify/scripts/`.
 - Write `.specify/memory/constitution.md`, then `specs/NNN-feature/spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md`, `checklists/`, `tasks.md` exactly per the templates.
 - Keep the same gates: stop for user review after spec, clarify, plan, and checklist; implement tasks in order and tick them off in `tasks.md`.
 

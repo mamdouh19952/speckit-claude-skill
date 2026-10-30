@@ -172,7 +172,8 @@ Claude **مش هيعمل init تاني ولا constitution تاني**، وهيب
 | 7 | `/speckit-analyze` | (اختياري) يتأكد إن الـ spec والـ plan والـ tasks متطابقين |
 | 8 | `/speckit-implement` | ينفّذ المهام ويكتب الكود |
 
-> - بعد `specify init` لو أوامر `/speckit-...` مظهرتش، اقفل Claude Code وافتحه تاني.
+> - في نفس الجلسة اللي اتعمل فيها `specify init`، أوامر `/speckit-...` لسه مش هتظهر في القائمة. ده طبيعي، و Claude بيكمّل الخطوات عادي من ملفاتها. من الجلسة اللي بعدها هتلاقي الأوامر جاهزة تكتبها بنفسك.
+> - بنود الـ checklist بتطلع من غير علامة ✓ عن قصد، عشان إنت اللي تراجعها. Claude هيعرضها عليك، وبعد ما توافق عليها يكمّل الـ implement.
 > - النسخ القديمة من Spec-Kit بتكتب الأوامر بنقطة (`/speckit.specify`)، والجديدة بشَرطة (`/speckit-specify`). الاتنين نفس الأمر.
 
 ### الفرق بين constitution و CLAUDE.md
@@ -239,7 +240,7 @@ Open Claude Code in your project folder and ask for what you want to build "usin
 - **Existing project, no Spec-Kit yet**: reads the code (suggests `/init` if there's no `CLAUDE.md`) → init → constitution derived from the existing code → the new feature. Init doesn't touch your code, `CLAUDE.md`, or `.claude/settings.json`.
 - **Existing project with Spec-Kit**: no init, no new constitution, straight to `/speckit-specify` for the new feature.
 
-Claude runs `specify init --here --force --non-interactive --integration claude`. Without `--integration claude`, a non-interactive init defaults to Copilot. Restart Claude Code if the `/speckit-*` commands don't appear after init. Older Spec-Kit versions name them `/speckit.specify` and so on.
+Claude runs `specify init --here --force --non-interactive --integration claude`. Without `--integration claude`, a non-interactive init defaults to Copilot. In the session that ran init, the `/speckit-*` commands don't show up yet. That's expected, and Claude runs the stages from their files anyway; they're available as commands from the next session. Checklist items start unchecked on purpose: you review them before implement continues. Older Spec-Kit versions name the commands `/speckit.specify` and so on.
 
 ## ChatGPT
 
