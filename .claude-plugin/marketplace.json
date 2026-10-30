@@ -1,0 +1,16 @@
+{
+  "name": "speckit-claude-skill",
+  "owner": {
+    "name": "Mamdouh"
+  },
+  "metadata": {
+    "description": "A Claude Code skill that makes GitHub Spec-Kit easy to use: install, init, then a guided spec → plan → tasks → implement workflow with review gates."
+  },
+  "plugins": [
+    {
+      "name": "speckit",
+      "source": "./plugins/speckit",
+      "description": "Guided spec-driven development with GitHub Spec-Kit: constitution → specify → clarify → plan → checklist → tasks → analyze → implement."
+    }
+  ]
+}

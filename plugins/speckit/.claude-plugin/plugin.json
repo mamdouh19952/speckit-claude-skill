@@ -1,0 +1,10 @@
+{
+  "name": "speckit",
+  "version": "1.0.0",
+  "description": "Makes GitHub Spec-Kit easy to use from Claude Code: installs specify, inits the project, then guides you through constitution → specify → clarify → plan → checklist → tasks → analyze → implement, with review gates.",
+  "author": { "name": "Mamdouh" },
+  "homepage": "https://github.com/mamdouh19952/speckit-claude-skill",
+  "repository": "https://github.com/mamdouh19952/speckit-claude-skill",
+  "license": "MIT",
+  "keywords": ["spec-kit", "speckit", "spec-driven-development", "specify"]
+}
