@@ -1,6 +1,6 @@
 ---
 name: "speckit-workflow"
-description: "Use when the user wants to build a project or feature with Spec-Kit / spec-driven development (speckit, /speckit.*, specify init, spec → plan → tasks → implement), or needs help installing or running GitHub Spec-Kit."
+description: "Use when the user wants to build a project or feature with Spec-Kit / spec-driven development (speckit, /speckit-*, /speckit.*, specify init, spec → plan → tasks → implement) — on a new project or adding a feature to an existing one — or needs help installing or running GitHub Spec-Kit."
 ---
 
 # Spec-Kit Workflow (Spec-Driven Development)
@@ -10,14 +10,25 @@ constitution → specify → clarify → plan → checklist → tasks → analyz
 
 Reply in the user's language; keep commands/code in English.
 
-## 0. Before starting
+## 0. Before starting — pick the scenario
 
 1. Confirm the working folder (project root). Ask if unclear.
-2. Confirm whether it is a **new** project or an **existing** one.
-   - Existing project → Spec-Kit builds the spec on top of the existing code; read the codebase and any `CLAUDE.md` / README first.
-   - New project → the user writes the feature description; help them shape it.
-3. Find out the stack (from `CLAUDE.md`, `package.json`, `composer.json`, etc., or ask). The plan must name it explicitly.
-4. Check the tooling: `specify --version` (and `uv --version`). If missing, install (step 1).
+2. Check the tooling: `specify --version` (and `uv --version`). If missing, install (step 1).
+3. Decide which scenario this is — they start differently:
+
+| Scenario | How to tell | Start with |
+|---|---|---|
+| **A. New project** | Empty (or almost empty) folder | Step 2 init → constitution → first feature |
+| **B. Existing project, Spec-Kit not set up yet** | Has code, no `.specify/` folder | Read the code (and `CLAUDE.md` if any) → step 2 init → constitution from the existing code → the new feature |
+| **C. Existing project, Spec-Kit already set up** | `.specify/` exists | **Skip init.** Constitution only if still a placeholder. Go straight to `/speckit-specify` for the new feature |
+
+4. Find out the stack (from `CLAUDE.md`, `package.json`, `composer.json`, etc., or ask). The plan must name it explicitly.
+
+### CLAUDE.md
+- `specify init` does **not** create or change `CLAUDE.md`. It is a Claude Code file, separate from Spec-Kit.
+- Scenario B with no `CLAUDE.md`: suggest the user runs Claude Code's `/init` first so Claude learns the codebase. Optional, but it makes the spec and plan match the existing code.
+- Scenario A: no need up front. After the first plan is approved, a short `CLAUDE.md` (stack, run/test commands) can be added if the user wants.
+- Never copy the constitution into `CLAUDE.md` or the reverse — see section 4.
 
 ## 1. Install (only if missing)
 
@@ -41,34 +52,45 @@ specify self upgrade
 - `uv` downloads a Python for itself if none is installed; Git must be installed (the CLI is installed from a git URL).
 - If `specify` is "not found" after installing, run `uv tool update-shell` and open a new terminal.
 
-## 2. Init the project
+## 2. Init the project (scenarios A and B only)
+
+Run this inside the project folder — the same command for a new or an existing project:
 
 ```bash
-# new project
-mkdir <project> && cd <project>
-specify init --here --integration claude --force
-
-# existing folder
-specify init . --integration claude
+specify init --here --force --non-interactive --integration claude
 ```
 
-- Correct flag is `--integration claude`, and `--force` with two normal hyphens (not an em dash `—force`).
-- Init adds `.specify/` (templates, scripts, memory/constitution) and the commands under `.claude/`.
-- Commands appear as `/speckit.specify` or `/speckit-specify` depending on version — same command; use whichever exists.
-- After init, the user may need to restart Claude Code for the new commands to show up.
+Why every flag matters when Claude runs it:
+- `--integration claude` — without it, a non-interactive run silently defaults to **Copilot**.
+- `--non-interactive` — Claude's shell can't answer the arrow-key prompts; without it init can hang.
+- `--force` — needed in any folder that already has files; without it init stops with "Current directory is not empty". Two normal hyphens, not an em dash (`—force`).
+
+What init does and doesn't touch (verified on specify 1.2.x):
+- Adds `.specify/` (templates, scripts, `memory/constitution.md`) and the Spec-Kit skills under `.claude/skills/speckit-*`.
+- Does **not** touch your code, `CLAUDE.md`, or `.claude/settings.json`.
+- Re-running it keeps an existing `.specify/memory/constitution.md` and `specs/`. Still, don't re-run it to add a feature — only to upgrade Spec-Kit (`specify self upgrade`, then init again).
+- Picks the script type for the OS (PowerShell on Windows, sh on macOS/Linux) automatically.
+- Optional: `--extension git` makes each new feature create its own git branch.
+
+After init:
+- If `/speckit-*` commands don't show up, ask the user to restart Claude Code (new skills folder).
+- Command names depend on the Spec-Kit version: `/speckit-specify` (1.x, installed as skills) or `/speckit.specify` (older, installed as commands). Same command — use whichever exists.
 
 ## 3. The workflow (in order)
 
 | # | Command | What it does | Gate |
 |---|---------|--------------|------|
-| 1 | `/speckit.constitution` | Project principles (constitution.md) | User provides/approves rules |
-| 2 | `/speckit.specify` | Feature description (AR/EN) → `specs/NNN-name/spec.md` | User reviews spec |
-| 3 | `/speckit.clarify` | Optional but recommended: asks questions about ambiguities | User answers |
-| 4 | `/speckit.plan` | `plan.md` architecture/design — state the stack explicitly | User reviews plan |
-| 5 | `/speckit.checklist` | Quality gate for requirements (design / UX / RTL / accessibility) | Fix gaps |
-| 6 | `/speckit.tasks` | Split plan into executable tasks | — |
-| 7 | `/speckit.analyze` | Optional: check spec / plan / tasks are consistent | Resolve issues |
-| 8 | `/speckit.implement` | Execute tasks and write code | — |
+| 1 | `/speckit-constitution` | Project principles (`.specify/memory/constitution.md`) — once per project | User provides/approves rules |
+| 2 | `/speckit-specify` | Feature description (AR/EN) → `specs/NNN-name/spec.md` | User reviews spec |
+| 3 | `/speckit-clarify` | Optional but recommended: asks questions about ambiguities | User answers |
+| 4 | `/speckit-plan` | `plan.md` architecture/design — state the stack explicitly | User reviews plan |
+| 5 | `/speckit-checklist` | Quality gate for requirements (design / UX / RTL / accessibility) | Fix gaps |
+| 6 | `/speckit-tasks` | Split plan into executable tasks | — |
+| 7 | `/speckit-analyze` | Optional: check spec / plan / tasks are consistent | Resolve issues |
+| 8 | `/speckit-implement` | Execute tasks and write code | — |
+| + | `/speckit-converge` | Optional (1.x): compare the code to the spec and add any unbuilt work to `tasks.md` | — |
+
+Adding a feature later (scenario C): skip init and constitution — start again from `/speckit-specify`. Each feature gets the next numbered folder in `specs/`.
 
 Rules:
 - Stop at each gate and show the user a short summary of the generated file before moving on. Never jump to implement without an approved spec + plan.
@@ -78,11 +100,14 @@ Rules:
 
 ## 4. Constitution vs CLAUDE.md
 
-- `.specify/memory/constitution.md` = the principles for THIS project (code style, testing rules, security rules, stack choices). Written by `/speckit.constitution`.
-- `CLAUDE.md` (if the project has one) = project facts and conventions Claude reads every session. Don't duplicate it into the constitution — reference it instead.
+- `.specify/memory/constitution.md` = the principles for THIS project (code style, testing rules, security rules, stack choices). Written by `/speckit-constitution`.
+  - Right after init it is only a template full of placeholders like `[PROJECT_NAME]` and `[PRINCIPLE_1_NAME]`. If you see those, the constitution has **not** been written yet — run `/speckit-constitution` before `/speckit-specify`.
+  - Existing project (scenario B): tell `/speckit-constitution` to derive the principles from the existing code and `CLAUDE.md` (stack, folder structure, naming, test style) so new work matches what's already there.
+  - Already filled (scenario C): don't re-run it for each feature — only when a principle really changes.
+- `CLAUDE.md` (if the project has one) = project facts and conventions Claude reads every session. Don't duplicate it into the constitution — reference it instead ("Also follow CLAUDE.md").
 - The plan's Constitution Check covers both.
 
-## 5. `/speckit.plan` details
+## 5. `/speckit-plan` details
 
 It takes `spec.md` and produces the technical plan:
 - Reads `constitution.md` + `spec.md`.
@@ -91,25 +116,25 @@ It takes `spec.md` and produces the technical plan:
 - **Phase 0 → `research.md`**: resolves ambiguous technical decisions (local vs S3 image storage, how net profit is calculated…).
 - **Phase 1 → `data-model.md`** (entities & relations) + `contracts/` (API endpoints, or web routes + forms for server-rendered apps) + `quickstart.md` (run/test steps).
 
-Run `/speckit.plan` plain first, review `research.md` and `data-model.md`, then steer if needed, e.g.:
+Run `/speckit-plan` plain first, review `research.md` and `data-model.md`, then steer if needed, e.g.:
 ```
-/speckit.plan Use spatie/laravel-medialibrary for images, and use Route Model Binding in all admin routes.
+/speckit-plan Use spatie/laravel-medialibrary for images, and use Route Model Binding in all admin routes.
 ```
 
 ## 6. Organizing features
 
-Each feature gets its own `/speckit.specify` and a numbered folder:
+Each feature gets its own `/speckit-specify` and a numbered folder:
 ```
 specs/
 ├── 001-authentication/spec.md
 ├── 002-products/spec.md
 └── 003-cart/spec.md
 ```
-Finish one feature → start the next with a new `/speckit.specify`. A "feature" = a complete capability (login, products, cart) — not every small edit. Not too small, not too big.
+Finish one feature → start the next with a new `/speckit-specify`. A "feature" = a complete capability (login, products, cart) — not every small edit. Not too small, not too big.
 
 ## 7. Figma designs
 
-Before `/speckit.implement` on a Figma design: make sure Figma MCP is connected and authenticated, and get the specific `node-id`. Read the design first, then run the full chain:
+Before `/speckit-implement` on a Figma design: make sure Figma MCP is connected and authenticated, and get the specific `node-id`. Read the design first, then run the full chain:
 ```
 using figma mcp can you read this figma pages <figma-url>?node-id=...
 using speckit make all of this to implement the figma design into pages and make it in small tasks with best practice
@@ -119,10 +144,10 @@ Any task converting a whole Figma design or touching multiple features should go
 
 ## 8. Arabic-first / RTL projects
 
-If the project is Arabic-first, put RTL in the spec and always run `/speckit.checklist` with a prompt like:
+If the project is Arabic-first, put RTL in the spec and always run `/speckit-checklist` with a prompt like:
 > تحقق من جودة التصميم و UX للصفحات العامة ولوحة الأدمن معًا: هوية بصرية موحدة (ألوان، خطوط، تباعد)، تباين لوني كافٍ (accessibility)، تصميم متجاوب (Responsive) لكل صفحة، دعم RTL واضح لكل عنصر تفاعلي، حالات التحميل/الأخطاء/النجاح موصوفة وقابلة للاختبار.
 
-## 9. Example `/speckit.specify` prompt (medical device maintenance center)
+## 9. Example `/speckit-specify` prompt (medical device maintenance center)
 
 ```
 مشروع لمركز صيانة أجهزة طبية، بواجهة Blade + Bootstrap. المطلوب:
@@ -138,7 +163,7 @@ If the project is Arabic-first, put RTL in the spec and always run `/speckit.che
 المشروع Arabic-first، لازم دعم RTL في التصميم.
 ```
 
-## 10. When `/speckit.*` commands are not available
+## 10. When `/speckit-*` commands are not available
 
 Run `specify init` in the project folder, then follow the same stages manually:
 - Read the templates in `.specify/templates/` (spec, plan, tasks, checklist) and any helper scripts in `.specify/scripts/`.

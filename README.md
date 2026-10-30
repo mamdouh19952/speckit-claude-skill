@@ -126,30 +126,66 @@ Copy-Item -Recurse speckit-claude-skill\plugins\speckit\skills\speckit-workflow 
 
 ## 3. طريقة الاستخدام
 
-1. افتح Claude Code جوه فولدر المشروع (جديد أو موجود).
-2. اكتبله طلبك عادي وقول إنك عايز تستخدم Spec-Kit، مثلًا:
+افتح Claude Code جوه فولدر المشروع، واكتب طلبك عادي وقول إنك عايز تستخدم speckit. السكيل بيعرف لوحده إنت في أنهي حالة من التلاتة دول:
 
-   ```
-   عايز أبني مشروع متجر صغير بـ Laravel + Blade باستخدام speckit
-   ```
+### الحالة 1: مشروع جديد (فولدر فاضي)
 
-3. السكيل هيشتغل لوحده: يتأكد من الأدوات، ينفّذ `specify init --here --integration claude`، وبعدين يمشّيك في الخطوات:
+```
+عايز أبني متجر صغير بـ Laravel + Blade باستخدام speckit
+```
+
+Claude هيعمل:
+1. `specify init` (يجهّز `.specify/` وأوامر Spec-Kit).
+2. `/speckit-constitution`: تتفقوا على مبادئ المشروع.
+3. أول feature: specify ← clarify ← plan ← checklist ← tasks ← implement.
+
+### الحالة 2: مشروع موجود، وأول مرة تستخدم فيه Spec-Kit
+
+```
+المشروع ده شغال، عايز أضيف feature للتقارير الشهرية باستخدام speckit
+```
+
+Claude هيعمل:
+1. يقرا الكود الموجود. ولو مفيش `CLAUDE.md` هيقترح عليك تشغّل `/init` الأول عشان يفهم المشروع (اختياري بس مفيد).
+2. `specify init`: آمن على المشروع، ومش بيلمس الكود ولا `CLAUDE.md` ولا `.claude/settings.json` (اتجرّب).
+3. `/speckit-constitution`: المبادئ بتتاخد من الكود الموجود (الـ stack، التسمية، شكل الفولدرات) عشان الجديد يمشي زي القديم.
+4. الـ feature الجديدة: specify ← … ← implement.
+
+### الحالة 3: مشروع فيه Spec-Kit من قبل، وعايز تضيف feature جديدة
+
+```
+عايز أضيف feature الكوبونات باستخدام speckit
+```
+
+Claude **مش هيعمل init تاني ولا constitution تاني**، وهيبدأ على طول من `/speckit-specify`. الـ feature الجديدة بتاخد الفولدر اللي عليه الدور في `specs/` (مثلًا `specs/004-coupons/`).
+
+### الأوامر بالترتيب
 
 | # | الأمر | بيعمل إيه |
 |---|---|---|
-| 1 | `/speckit.constitution` | مبادئ المشروع (قواعد الكود، الاختبارات، الأمان) |
-| 2 | `/speckit.specify` | وصف الـ feature ← `specs/001-name/spec.md` |
-| 3 | `/speckit.clarify` | (اختياري ومهم) يسألك عن أي حاجة مش واضحة |
-| 4 | `/speckit.plan` | الخطة التقنية والـ stack والـ data model |
-| 5 | `/speckit.checklist` | مراجعة جودة المتطلبات (UX، RTL، accessibility) |
-| 6 | `/speckit.tasks` | تقسيم الخطة لمهام صغيرة |
-| 7 | `/speckit.analyze` | (اختياري) يتأكد إن الـ spec والـ plan والـ tasks متطابقين |
-| 8 | `/speckit.implement` | ينفّذ المهام ويكتب الكود |
+| 1 | `/speckit-constitution` | مبادئ المشروع، **مرة واحدة** للمشروع |
+| 2 | `/speckit-specify` | وصف الـ feature ← `specs/001-name/spec.md` |
+| 3 | `/speckit-clarify` | (اختياري ومهم) يسألك عن أي حاجة مش واضحة |
+| 4 | `/speckit-plan` | الخطة التقنية والـ stack والـ data model |
+| 5 | `/speckit-checklist` | مراجعة جودة المتطلبات (UX، RTL، accessibility) |
+| 6 | `/speckit-tasks` | تقسيم الخطة لمهام صغيرة |
+| 7 | `/speckit-analyze` | (اختياري) يتأكد إن الـ spec والـ plan والـ tasks متطابقين |
+| 8 | `/speckit-implement` | ينفّذ المهام ويكتب الكود |
 
-> بعد `specify init` ممكن تحتاج تقفل Claude Code وتفتحه تاني عشان أوامر `/speckit.*` تظهر. حسب نسخة Spec-Kit، الأوامر ممكن تظهر بالشكل `/speckit.specify` أو `/speckit-specify` — الاتنين نفس الأمر.
+> - بعد `specify init` لو أوامر `/speckit-...` مظهرتش، اقفل Claude Code وافتحه تاني.
+> - النسخ القديمة من Spec-Kit بتكتب الأوامر بنقطة (`/speckit.specify`)، والجديدة بشَرطة (`/speckit-specify`). الاتنين نفس الأمر.
+
+### الفرق بين constitution و CLAUDE.md
+
+| الملف | مين بيعمله | فيه إيه |
+|---|---|---|
+| `.specify/memory/constitution.md` | `/speckit-constitution` | مبادئ المشروع (قواعد الكود، الاختبارات، الأمان) |
+| `CLAUDE.md` | Claude Code (`/init`) أو إنت | معلومات المشروع اللي Claude بيقراها كل جلسة (الـ stack، أوامر التشغيل) |
+
+`specify init` مش بيعمل `CLAUDE.md` ومش بيعدّله، فالملفين مستقلين ومحدش فيهم بيكتب فوق التاني.
 
 **نصايح:**
-- كل feature (تسجيل دخول، منتجات، سلة...) ليها `/speckit.specify` لوحدها وفولدر مرقّم في `specs/`.
+- كل feature (تسجيل دخول، منتجات، سلة...) ليها `/speckit-specify` لوحدها.
 - لو مستعجل: constitution ← specify ← plan ← tasks ← implement.
 - لو المشروع عربي: اذكر RTL في الـ spec، والسكيل هيشغّل checklist خاص بالـ RTL.
 
@@ -197,7 +233,13 @@ Open a new terminal after installing uv. If `specify` isn't found, run `uv tool 
 
 ## Use it
 
-Open Claude Code in your project folder and ask for what you want to build "using speckit". The skill takes it from there. You may need to restart Claude Code after `specify init` for the `/speckit.*` commands to appear.
+Open Claude Code in your project folder and ask for what you want to build "using speckit". The skill handles three cases:
+
+- **New project**: init → `/speckit-constitution` → first feature.
+- **Existing project, no Spec-Kit yet**: reads the code (suggests `/init` if there's no `CLAUDE.md`) → init → constitution derived from the existing code → the new feature. Init doesn't touch your code, `CLAUDE.md`, or `.claude/settings.json`.
+- **Existing project with Spec-Kit**: no init, no new constitution, straight to `/speckit-specify` for the new feature.
+
+Claude runs `specify init --here --force --non-interactive --integration claude`. Without `--integration claude`, a non-interactive init defaults to Copilot. Restart Claude Code if the `/speckit-*` commands don't appear after init. Older Spec-Kit versions name them `/speckit.specify` and so on.
 
 ## ChatGPT
 
