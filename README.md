@@ -30,8 +30,7 @@
 
 هذه الـ Skill تتولّى ذلك عنك. اطلب من Claude ما تريد بناءه، وسيتكفّل بتجهيز الأدوات وتهيئة المشروع وقيادتك عبر المراحل بالترتيب، مع التوقّف عند كل مرحلة مهمة لمراجعتك.
 
-> [!NOTE]
-> هذه الـ Skill مكمِّلة لأداة Spec-Kit الرسمية وليست بديلًا عنها؛ الأداة نفسها تُثبَّت على جهازك كما هو موضَّح أدناه.
+> **ملاحظة:** هذه الـ Skill مكمِّلة لأداة Spec-Kit الرسمية وليست بديلًا عنها؛ الأداة نفسها تُثبَّت على جهازك كما هو موضَّح أدناه.
 
 ## المزايا
 
@@ -44,18 +43,11 @@
 
 ## سير العمل
 
-</div>
+<p align="center" dir="ltr">
+  <code>constitution</code> → <b><code>specify</code></b> ✅ → <code>clarify</code> → <b><code>plan</code></b> ✅ → <b><code>checklist</code></b> ✅ → <code>tasks</code> → <code>analyze</code> → <code>implement</code>
+</p>
 
-```mermaid
-flowchart LR
-    A[constitution] --> B[specify] --> C[clarify] --> D[plan] --> E[checklist] --> F[tasks] --> G[analyze] --> H[implement]
-    classDef gate stroke:#3fb950,stroke-width:2px
-    class B,D,E gate
-```
-
-<div dir="rtl">
-
-المراحل المحدَّدة باللون الأخضر هي **نقاط المراجعة**: يعرض Claude ملخّصًا لما أُنجز وينتظر موافقتك قبل المتابعة.
+المراحل المميَّزة بالعلامة ✅ هي **نقاط المراجعة**: يعرض Claude ملخّصًا لما أُنجز وينتظر موافقتك قبل المتابعة.
 
 ---
 
@@ -148,8 +140,7 @@ git --version && claude --version && uv --version && specify --version
 
 <div dir="rtl">
 
-> [!TIP]
-> إذا ظهرت رسالة `specify: command not found`، نفّذ `uv tool update-shell` ثم افتح الـ terminal من جديد.
+> 💡 إذا ظهرت رسالة `specify: command not found`، نفّذ `uv tool update-shell` ثم افتح الـ terminal من جديد.
 
 ---
 
@@ -252,8 +243,7 @@ Build a small online store with Laravel + Blade using speckit
 | **مشروع قائم** لم يُستخدم فيه Spec-Kit | قراءة الكود الحالي ← تهيئة آمنة لا تمسّ ملفاتك ← دستور مستخلَص من أسلوب الكود الحالي ← الميزة الجديدة |
 | **مشروع مُهيَّأ مسبقًا** بـ Spec-Kit | تبدأ مباشرةً من `/speckit-specify` دون تهيئة أو دستور جديد، وتُنشئ مجلد الميزة التالي في `specs/` (مثل `specs/004-coupons/`) |
 
-> [!TIP]
-> في المشروع القائم الذي لا يحتوي على `CLAUDE.md`، ستقترح عليك الـ Skill تشغيل `/init` أولًا ليتعرّف Claude على المشروع. الخطوة اختيارية لكنها مفيدة.
+> 💡 في المشروع القائم الذي لا يحتوي على `CLAUDE.md`، ستقترح عليك الـ Skill تشغيل `/init` أولًا ليتعرّف Claude على المشروع. الخطوة اختيارية لكنها مفيدة.
 
 ### أوامر Spec-Kit
 

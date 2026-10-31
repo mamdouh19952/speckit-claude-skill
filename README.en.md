@@ -42,14 +42,11 @@ This skill handles all of that for you. Tell Claude what you want to build, and 
 
 ## Workflow
 
-```mermaid
-flowchart LR
-    A[constitution] --> B[specify] --> C[clarify] --> D[plan] --> E[checklist] --> F[tasks] --> G[analyze] --> H[implement]
-    classDef gate stroke:#3fb950,stroke-width:2px
-    class B,D,E gate
-```
+<p align="center">
+  <code>constitution</code> → <b><code>specify</code></b> ✅ → <code>clarify</code> → <b><code>plan</code></b> ✅ → <b><code>checklist</code></b> ✅ → <code>tasks</code> → <code>analyze</code> → <code>implement</code>
+</p>
 
-The stages outlined in green are **review gates**: Claude summarizes what was produced and waits for your approval before moving on.
+The stages marked ✅ are **review gates**: Claude summarizes what was produced and waits for your approval before moving on.
 
 ---
 
